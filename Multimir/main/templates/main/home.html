@@ -1,0 +1,89 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'main/css/main.css' %}">{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="text-image-container">
+        <div class="text-block">
+            <p>Ваше путешествие начинается здесь, в Multimir — вашем ключе к миру анимации, где каждый кадр оживает и каждая история вдохновляет. Multimir — это не просто сайт, это ворота в мир, где мечты становятся реальностью.</p>
+            <p>Откройте для себя мир, где анимация не знает границ. Общайтесь с теми, кто разделяет вашу страсть, узнавайте секреты мастерства от великих создателей и новых звезд, исследуйте нашу обширную коллекцию анимационных шедевров, которая охватывает все, от вечной классики до последних новинок.</p>
+            <p>Multimir — это ваш билет в мир, где каждый фрейм рассказывает историю, и каждый персонаж приглашает вас в удивительное приключение. Присоединяйтесь к нам и позвольте Multimir стать вашим компасом в мире анимации, наполненном радостью открытий и чудом творчества.</p>
+        </div>
+        <div class="image-container">
+            <img src="{% static 'main/images/cat.png' %}" alt="Orange Image">
+        </div>
+    </div>
+    <div class="chat-text-container">
+        <div class="chat-container">
+            <h1>Чат</h1>
+            <div id="chat-messages" class="chat-messages"></div>
+            <form id="chat-form" action="{% url 'send_message' %}" method="post">
+                {% csrf_token %}
+                <input type="text" id="chat-input" name="message" placeholder="Введите сообщение..." />
+                <button type="submit">Отправить</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var chatMessagesDiv = document.getElementById('chat-messages');
+        var loadedMessageIds = []; 
+    
+        function loadMessages() {
+            let lastMessageId = loadedMessageIds.length > 0? Math.max(...loadedMessageIds) : 0;
+            fetch(`/get_messages/?since=${lastMessageId}`)
+               .then(response => response.json())
+               .then(data => {
+                    data.forEach(message => {
+                        if (!loadedMessageIds.includes(message.id)) {
+                            var messageElement = document.createElement('p');
+                            messageElement.innerHTML = `<strong>${message.author}:</strong> ${message.content}`;
+                            messageElement.style.marginBottom = '10px';
+                            messageElement.style.padding = '5px';
+                            messageElement.style.backgroundColor = '#54a9a6';
+                            messageElement.style.borderRadius = '3px';
+                            chatMessagesDiv.appendChild(messageElement);
+                            loadedMessageIds.push(message.id);
+                        }
+                    });
+                })
+               .catch(error => console.error('Error loading messages:', error));
+        }
+    
+        loadMessages();
+        setInterval(loadMessages, 1000);
+    });
+    document.getElementById('chat-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвращает стандартное поведение формы
+    
+        var formData = new FormData(this); // Создает объект FormData из элемента формы
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}' 
+            },
+            credentials: 'include' 
+        })
+       .then(response => response.json())
+       .then(data => {
+            if (data.status === 'success') {
+
+                alert(data.message);
+
+            } else {
+
+                alert(data.message);
+            }
+        })
+       .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+{% endblock %}

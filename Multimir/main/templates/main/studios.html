@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}Студии{% endblock %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'main/css/studios.css' %}">{% endblock %}
+
+{% block content %}
+<h1>Студии</h1>
+<div class="content-container">
+    {% for studio in studios %}
+    <div class="text-image-container">
+        <div class="text-block">
+            <h2>{{ studio.name }}</h2>
+            <p>{{ studio.description }}</p>
+        </div>
+        <div class="image-container">
+            <img src="{{ studio.logo.url }}" alt="{{ studio.name }}">
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}Мультфильмы{% endblock %}
+
+{% block style %}<link rel="stylesheet" href="{% static 'main/css/cartoon.css' %}">{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Мультфильмы</h1>
+</div>
+<div class="content-container">
+    {% for cartoon in cartoons %}
+    <div class="cartoon-card">
+        <div class="image-container">
+            <img src="{{ cartoon.poster_image.url }}" alt="{{ cartoon.name }}">
+        </div>
+        <div class="text-block">
+            <h2>{{ cartoon.title }}</h2>
+            <p>{{ cartoon.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
